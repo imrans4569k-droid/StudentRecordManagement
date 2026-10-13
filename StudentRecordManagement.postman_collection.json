@@ -1,0 +1,136 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Student Record Management API",
+    "description": "Postman API Collection for testing Student Record Management System REST Endpoints (Spring Boot + MySQL).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Get All Students",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/students",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "students"
+          ]
+        },
+        "description": "Fetch all student records from MySQL database."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get Student by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/students/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "students",
+            "1"
+          ]
+        },
+        "description": "Fetch a specific student record by its primary ID."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Add New Student (CREATE)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sameer Ahmed\",\n  \"roll\": \"CSE-2024-099\",\n  \"department\": \"Computer Science\",\n  \"year\": \"3rd Year\",\n  \"email\": \"sameer@example.com\",\n  \"phone\": \"9812345678\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/students",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "students"
+          ]
+        },
+        "description": "Insert a new student into the MySQL database."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Update Student (UPDATE)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mohammed Imran (Updated)\",\n  \"roll\": \"CSE-2024-001\",\n  \"department\": \"Computer Science & Engineering\",\n  \"year\": \"4th Year\",\n  \"email\": \"imran.updated@example.com\",\n  \"phone\": \"9876543210\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/students/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "students",
+            "1"
+          ]
+        },
+        "description": "Update an existing student record by ID in MySQL database."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Delete Student (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/students/3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "students",
+            "3"
+          ]
+        },
+        "description": "Delete a student record by ID from MySQL database."
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Record Management System</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #1e293b;
+        }
+
+        .navbar {
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            font-size: 1.25rem;
+        }
+
+        .card {
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            background: #ffffff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-header {
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            border-radius: 16px 16px 0 0 !important;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 0.65rem 0.9rem;
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #2a5298;
+            box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.15);
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 0.6rem 1.25rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .table thead th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.825rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .badge-dept {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+        }
+
+        .badge-year {
+            background-color: #fef3c7;
+            color: #b45309;
+            font-weight: 600;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+        }
+
+        .tech-badge {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-dark py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span class="navbar-brand d-flex align-items-center gap-2">
+                <i class="bi bi-mortarboard-fill fs-4"></i>
+                Student Record Management System
+            </span>
+            <div class="d-none d-md-flex gap-2">
+                <span class="tech-badge"><i class="bi bi-cpu"></i> Spring Boot</span>
+                <span class="tech-badge"><i class="bi bi-database"></i> MySQL</span>
+                <span class="tech-badge"><i class="bi bi-box"></i> Maven</span>
+                <span class="tech-badge"><i class="bi bi-send"></i> Postman Ready</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+
+        <!-- Title & Stats Row -->
+        <div class="row align-items-center mb-4 g-3">
+            <div class="col-md-7">
+                <h2 class="fw-bold mb-1" style="color: #0f172a;">Student Records Directory</h2>
+                <p class="text-secondary mb-0">Manage student records with full CRUD operations backed by Spring Boot REST API & MySQL.</p>
+            </div>
+            <div class="col-md-5 text-md-end">
+                <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill" id="studentCount">
+                    0 Students Registered
+                </span>
+            </div>
+        </div>
+
+        <!-- Alert Notification -->
+        <div id="notice" class="alert d-none shadow-sm" role="alert"></div>
+
+        <!-- Student Form Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-person-plus-fill me-2 text-primary"></i>
+                    <span id="formTitle">Add New Student</span>
+                </span>
+                <span class="text-muted small">* All fields are required</span>
+            </div>
+            <div class="card-body p-4">
+                <form id="studentForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="name">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="e.g. Mohammed Imran" maxlength="100" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="roll">Roll Number</label>
+                            <input type="text" class="form-control" id="roll" name="roll" placeholder="e.g. CSE-2024-001" maxlength="50" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="department">Department</label>
+                            <select class="form-select" id="department" name="department" required>
+                                <option value="" disabled selected>Select Department</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Electronics & Communication">Electronics & Communication</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                <option value="Civil Engineering">Civil Engineering</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="year">Year of Study</label>
+                            <select class="form-select" id="year" name="year" required>
+                                <option value="" disabled selected>Select Year</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="e.g. imran@example.com" maxlength="100" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="e.g. 9876543210" maxlength="20" required>
+                        </div>
+                        <div class="col-12 d-flex gap-2 pt-2">
+                            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" id="submitBtn">
+                                <i class="bi bi-check-circle"></i> Save Student
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary d-none" id="cancelBtn">
+                                <i class="bi bi-x-circle"></i> Cancel Edit
+                            </button>
+                            <button type="reset" class="btn btn-light ms-auto">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Student Records Table Card -->
+        <div class="card">
+            <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div class="fw-bold">
+                    <i class="bi bi-people-fill me-2 text-primary"></i> Registered Students
+                </div>
+                <div class="position-relative" style="min-width: 280px;">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text" class="form-control ps-5" id="search" placeholder="Search by name, roll, dept...">
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Department</th>
+                                <th>Year</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentRows">
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                                    Loading student records from MySQL...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center text-muted small py-4 mt-3">
+            Spring Boot • MySQL • Eclipse • Maven • Postman REST API
+        </footer>
+
+    </main>
+
+    <script>
+        const form = document.getElementById("studentForm");
+        const studentRows = document.getElementById("studentRows");
+        const searchInput = document.getElementById("search");
+        const studentCount = document.getElementById("studentCount");
+        const notice = document.getElementById("notice");
+        const submitBtn = document.getElementById("submitBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const formTitle = document.getElementById("formTitle");
+
+        let students = [];
+        let editingId = null;
+        let noticeTimer;
+
+        function showMessage(message, type = "success") {
+            clearTimeout(noticeTimer);
+            notice.className = `alert alert-${type} shadow-sm`;
+            notice.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'} me-2"></i> ${escapeHtml(message)}`;
+            notice.classList.remove("d-none");
+
+            noticeTimer = setTimeout(() => {
+                notice.classList.add("d-none");
+            }, 4500);
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, c => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[c]);
+        }
+
+        async function apiRequest(url, options = {}) {
+            const response = await fetch(url, options);
+            let data = null;
+
+            try {
+                data = await response.json();
+            } catch (err) {
+                // If empty or non-JSON
+            }
+
+            if (!response.ok) {
+                const errorMsg = (data && data.error) ? data.error : "Request failed with status " + response.status;
+                throw new Error(errorMsg);
+            }
+            return data;
+        }
+
+        async function loadStudents() {
+            try {
+                students = await apiRequest("/api/students");
+                renderStudents();
+            } catch (error) {
+                studentRows.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-danger py-5">
+                            <i class="bi bi-exclamation-circle-fill fs-3 d-block mb-2"></i>
+                            Could not load records. Please ensure Spring Boot is running and MySQL is active.<br>
+                            <small class="text-muted">${escapeHtml(error.message)}</small>
+                        </td>
+                    </tr>
+                `;
+                studentCount.textContent = "0 Students Registered";
+            }
+        }
+
+        function renderStudents() {
+            const query = searchInput.value.trim().toLowerCase();
+
+            const filtered = students.filter(s => {
+                const combined = [s.name, s.roll, s.department, s.year, s.email, s.phone].join(" ").toLowerCase();
+                return combined.includes(query);
+            });
+
+            studentCount.textContent = `${filtered.length} Student${filtered.length === 1 ? '' : 's'} Registered`;
+
+            if (filtered.length === 0) {
+                studentRows.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-secondary py-5">
+                            <i class="bi bi-inbox fs-3 d-block mb-2 text-muted"></i>
+                            No student records found. Add one above!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            studentRows.innerHTML = filtered.map(s => `
+                <tr>
+                    <td class="fw-bold font-monospace text-primary">${escapeHtml(s.roll)}</td>
+                    <td class="fw-semibold text-dark">${escapeHtml(s.name)}</td>
+                    <td><span class="badge-dept">${escapeHtml(s.department || '-')}</span></td>
+                    <td><span class="badge-year">${escapeHtml(s.year || '-')}</span></td>
+                    <td><a href="mailto:${escapeHtml(s.email)}" class="text-decoration-none text-secondary">${escapeHtml(s.email || '-')}</a></td>
+                    <td><span class="text-secondary">${escapeHtml(s.phone || '-')}</span></td>
+                    <td class="text-end pe-4 text-nowrap">
+                        <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="editStudent(${s.id})">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudent(${s.id})">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const studentPayload = Object.fromEntries(formData.entries());
+            const isEditing = editingId !== null;
+
+            if (isEditing) {
+                studentPayload.id = editingId;
+            }
+
+            const url = isEditing ? `/api/students/${editingId}` : "/api/students";
+
+            try {
+                await apiRequest(url, {
+                    method: isEditing ? "PUT" : "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(studentPayload)
+                });
+
+                resetForm();
+                showMessage(isEditing ? "Student record updated successfully!" : "Student record added successfully!");
+                await loadStudents();
+            } catch (error) {
+                showMessage(error.message, "danger");
+            }
+        });
+
+        window.editStudent = function(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) {
+                showMessage("Student record not found.", "danger");
+                return;
+            }
+
+            form.elements.namedItem("name").value = student.name;
+            form.elements.namedItem("roll").value = student.roll;
+            form.elements.namedItem("department").value = student.department;
+            form.elements.namedItem("year").value = student.year;
+            form.elements.namedItem("email").value = student.email;
+            form.elements.namedItem("phone").value = student.phone;
+
+            editingId = id;
+            formTitle.textContent = "Edit Student Record";
+            submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Update Student';
+            cancelBtn.classList.remove("d-none");
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        window.deleteStudent = async function(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+
+            if (!confirm(`Are you sure you want to delete the record for ${student.name} (${student.roll})?`)) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/api/students/${id}`, { method: "DELETE" });
+                if (editingId === id) resetForm();
+                showMessage("Student record deleted successfully.");
+                await loadStudents();
+            } catch (error) {
+                showMessage(error.message, "danger");
+            }
+        };
+
+        function resetForm() {
+            form.reset();
+            editingId = null;
+            formTitle.textContent = "Add New Student";
+            submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Save Student';
+            cancelBtn.classList.add("d-none");
+        }
+
+        cancelBtn.addEventListener("click", resetForm);
+        form.addEventListener("reset", () => setTimeout(resetForm, 10));
+        searchInput.addEventListener("input", renderStudents);
+
+        // Initial load
+        loadStudents();
+    </script>
+</body>
+</html>
